@@ -59,7 +59,7 @@ local function List(prototype)
         if M.has(self, "model") and M.has(self.model, "data") then
             M.forEach(self.model.data, function(index, value)
                 local text, color = unpack(value)
-                Graphics:print(text, x, y + index * 20, color)
+                Graphics:print(text, x + Theme.Margin, y + index * 20, color)
             end)
         end
     end)
