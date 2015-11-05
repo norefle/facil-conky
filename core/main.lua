@@ -8,7 +8,34 @@ local Conf = {}
 Conf.Tasks = {}
 Conf.Tasks.Top = 50
 Conf.Tasks.Left = 50
-Conf.Tasks.Limit = 25
+Conf.Tasks.Limit = 10
+
+--[[
+@todo Desired structure to describe the theme is the following one (pseudocode):
+    @code
+    local cpu = Conky.CPU {
+        text = "cpu0"
+    }
+    local main = UI.Window {
+        theme = Theme,
+        width = 800,
+        height = 600,
+        UI.Horizontal {
+            UI.Panel {
+                width = 200,
+                UI.Label {
+                    text = "Hello world"
+                }
+            },
+            UI.Spacer { },
+            UI.Status {
+                text = "CPU: 0",
+                source = cpu,
+            }
+        }
+    }
+    @endcode
+]]--
 
 function conky_main(style, path)
     assert(style, "Expects not null style name")
