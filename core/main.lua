@@ -1,6 +1,7 @@
 require "cairo"
 
 local Facil = require "facil"
+local Moses = require "moses"
 local Theme = nil
 
 local Conf = {}
@@ -67,41 +68,26 @@ function conky_main(style, path)
 
     local states, description = Facil.status(path)
     if states then
-        local count = 0
-        for _, lane in pairs(states) do
-            local limit = (lane.limit ~= 0) and lane.limit or Conf.Tasks.Limit
-            local header = string.format(
-                "[ %3d | %3d ] %s", #lane.tasks, lane.wip, lane.name
-            )
-            local full = (lane.wip ~= 0) and (#lane.tasks >= lane.wip) or false
-            if full then
-              cairo_set_source_rgba(display, unpack(Theme.Color.Warning))
-            else
-              cairo_set_source_rgba(display, unpack(Theme.Color.Success))
-            end
-            cairo_move_to(display, Conf.Tasks.Left, Conf.Tasks.Top  + 20 * count)
-            cairo_show_text(display, header)
+        -- Transfrom to string list.
+        local todoList = Moses.flatten(
+            Moses.map(states, function(_, board)
+                local title = string.format("[ %3d | %3d ] %s", #board.tasks, board.wip, board.name)
+                local tasks = Moses.map(board.tasks, function(_, task)
+                    return string.format("%s %s (%s)",
+                        os.date("%d.%m.%Y", task.moved),
+                        task.name,
+                        task.id:sub(1, 8)
+                    )
+                end)
+                return Moses.addTop(Moses.take(tasks, (board.limit ~= 0) and board.limit or Conf.Tasks.Limit), { "", title })
+            end)
+        )
+        -- Print result on desktop.
+        Moses.forEach(todoList, function(index, value)
             cairo_set_source_rgba(display, unpack(Theme.Color.Text))
-            local taskCount = 0
-            for _, task in pairs(lane.tasks) do
-                count = count + 1
-                cairo_move_to(display, Conf.Tasks.Left, Conf.Tasks.Top  + 20 * count)
-
-                taskCount = taskCount + 1
-                if limit < taskCount then
-                    cairo_show_text(display, "..." .. (#lane.tasks - taskCount) .. " more ...")
-                    break
-                end
-                local result = string.format(
-                    "%s %s (%s)",
-                    os.date("%d.%m.%Y", task.moved),
-                    task.name,
-                    task.id:sub(1, 8)
-                )
-                cairo_show_text(display, result)
-            end
-          count = count + 2
-        end
+            cairo_move_to(display, Conf.Tasks.Left, Conf.Tasks.Top  + 20 * index)
+            cairo_show_text(display, value)
+        end)
     end
 
     cairo_destroy(display)
