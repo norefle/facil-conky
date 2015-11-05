@@ -25,6 +25,6 @@ use_xft yes
 
 # hook: name_without_conky_prefix theme_name path_to_facil_root
 lua_draw_hook_pre main light /full/path/to/facil/root/dir
-lua_load core/main.lua
+lua_load main.lua
 
 TEXT

@@ -94,6 +94,10 @@ local function getTodoList(states, description)
 
             local tasks = M.map(board.tasks, function(_, task) return { taskAsString(task), textColor } end)
             local tasksPrefix = M.take(tasks, (board.limit ~= 0) and board.limit or Conf.Tasks.Limit)
+            local gap = #tasks - #tasksPrefix
+            if gap > 0 then
+                M.push(tasksPrefix, {string.format("...%d more...", gap), textColor })
+            end
             return M.addTop(tasksPrefix, title, { "", Theme.Color.Text })
         end),
         true
