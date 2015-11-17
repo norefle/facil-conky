@@ -23,8 +23,8 @@ draw_graph_borders no
 override_utf8_locale yes
 use_xft yes
 
-# hook: name_without_conky_prefix theme_name path_to_facil_root
-lua_draw_hook_pre main light /full/path/to/facil/root/dir
+# hook: name_without_conky_prefix theme_name path_to_facil_root width height
+lua_draw_hook_pre main light /full/path/to/facil/root/dir 1366 768
 lua_load main.lua
 
 TEXT

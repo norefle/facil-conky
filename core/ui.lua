@@ -26,27 +26,28 @@ local function object(prototype, name)
     local obj = properties(prototype)
     obj.children = children(prototype)
     obj.name = name or "object"
-
-    function obj:draw(x, y)
-        local x, y, width, height = x, y, self.width, self.height
-        Graphics:rectangle(Theme.Color.Border, x, y, width, height)
-    end
+    obj.x = obj.x or 0
+    obj.y = obj.y or 0
 
     return obj
 end
 
-local function draw(element, x, y)
+local function draw(element)
     if hasMethod(element, "draw") then
-        element:draw(x or 0, y or 0)
+        element:draw()
     end
 
-    M.forEach(element.children, function(_, child) draw(child, x, y) end)
+    M.forEach(element.children, function(_, child) draw(child) end)
 end
 
 -- Core functionality
 local function Window(prototype)
     local obj = object(prototype)
     obj.name = "Window"
+    function obj:draw()
+        local x, y, width, height = self.x, self.y, self.width, self.height
+        --Graphics:rectangle(Theme.Color.Border, x, y, width, height)
+    end
 
     return obj
 end
@@ -54,15 +55,41 @@ end
 local function List(prototype)
     local obj = object(prototype)
     obj.name = "List"
-    obj.draw = M.wrap(obj.draw, function(f, self, x, y)
-        f(self, x, y)
+    obj.draw = function(self)
         if M.has(self, "model") and M.has(self.model, "data") then
             M.forEach(self.model.data, function(index, value)
                 local text, color = unpack(value)
-                Graphics:print(text, x + Theme.Margin, y + index * 20, color)
+                Graphics:print(text, self.x + Theme.Margin, self.y + index * 20, color)
             end)
         end
-    end)
+    end
+
+    return obj
+end
+
+local function Bar(prototype)
+    local obj = object(prototype)
+    obj.name = "Bar"
+
+    obj.draw = function(self)
+        local x, y, width, height = self.x, self.y, self.width, self.height
+        Graphics:rectangle(Theme.Color.Border, x, y, width, height)
+
+        local barX, barY, barHeight, barWidth = x, y, height, width
+        local total = (self.model.total and 0 ~= self.model.total)
+                      and self.model.total
+                      or 100
+        local use = self.model.use or 0
+        local current = use / total
+        if self.orientation and "vertical" == self.orientation then
+            barHeight = math.modf(height * current)
+            barY = y + (height - barHeight)
+        else
+            barWidth = math.modf(width * current)
+            barX = x + (width - barWidth)
+        end
+        Graphics:rectangle(Theme.Color.Border, barX, barY, barWidth, barHeight)
+    end
 
     return obj
 end
@@ -76,6 +103,7 @@ return function(graphics, theme)
     return {
         Window = Window,
         List = List,
+        Bar = Bar,
         draw = draw
     }
 end
