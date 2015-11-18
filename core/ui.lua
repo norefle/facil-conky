@@ -46,7 +46,6 @@ local function Window(prototype)
     obj.name = "Window"
     function obj:draw()
         local x, y, width, height = self.x, self.y, self.width, self.height
-        --Graphics:rectangle(Theme.Color.Border, x, y, width, height)
     end
 
     return obj
@@ -73,7 +72,7 @@ local function Bar(prototype)
 
     obj.draw = function(self)
         local x, y, width, height = self.x, self.y, self.width, self.height
-        Graphics:rectangle(Theme.Color.Border, x, y, width, height)
+        Graphics:rectangle(Theme.Color.Border, Theme.Color.Transparent, x, y, width, height)
 
         local barX, barY, barHeight, barWidth = x, y, height, width
         local total = (self.model.total and 0 ~= self.model.total)
@@ -86,9 +85,8 @@ local function Bar(prototype)
             barY = y + (height - barHeight)
         else
             barWidth = math.modf(width * current)
-            barX = x + (width - barWidth)
         end
-        Graphics:rectangle(Theme.Color.Border, barX, barY, barWidth, barHeight)
+        Graphics:rectangle(Theme.Color.Border, Theme.Color.Accent, barX, barY, barWidth, barHeight)
     end
 
     return obj

@@ -12,10 +12,12 @@ function _M:print(text, x, y, color)
     cairo_show_text(self.context, text)
 end
 
-function _M:rectangle(color, x, y, width, height)
-    cairo_set_source_rgba(self.context, unpack(color))
+function _M:rectangle(foreground, background, x, y, width, height)
+    cairo_set_source_rgba(self.context, unpack(foreground))
     cairo_rectangle(self.context, x, y, width, height)
-    cairo_stroke(self.context)
+    cairo_stroke_preserve(self.context)
+    cairo_set_source_rgba(self.context, unpack(background))
+    cairo_fill(self.context)
 end
 
 return function(cairoContext)

@@ -4,8 +4,8 @@
 
 local _M = {}
 
-function _M.color(r, g, b)
-    return { r / 256, g / 256, b / 256, 1.0 }
+function _M.color(r, g, b, a)
+    return { r / 256, g / 256, b / 256, a and (a / 255) or 1.0 }
 end
 
 return _M
