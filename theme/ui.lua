@@ -20,6 +20,7 @@ return Ui.Window {
     },
     -- Ui.Horizontal {
     Ui.Bar {
+        -- CPU0
         x = windowWidth - 210,
         y = windowHeight - 170,
         orientation = "vertical",
@@ -28,6 +29,7 @@ return Ui.Window {
         height = 100
     },
     Ui.Bar {
+        -- CPU1
         x = windowWidth - 215 + 60,
         y = windowHeight - 170,
         orientation = "vertical",
@@ -36,6 +38,7 @@ return Ui.Window {
         height = 100
     },
     Ui.Bar {
+        -- CPU2
         x = windowWidth - 215 + 115,
         y = windowHeight - 170,
         orientation = "vertical",
@@ -44,6 +47,7 @@ return Ui.Window {
         height = 100
     },
     Ui.Bar {
+        -- CPU3
         x = windowWidth - 215 + 170,
         y = windowHeight - 170,
         orientation = "vertical",
@@ -52,6 +56,7 @@ return Ui.Window {
         height = 100
     },
     Ui.Bar {
+        -- Memory
         x = windowWidth - 210,
         y = windowHeight - 55,
         orientation = "horizontal",
@@ -60,20 +65,22 @@ return Ui.Window {
         height = 50
     },
     Ui.Bar {
+        -- Network up
         x = windowWidth - 210,
-        y = windowHeight + 5,
+        y = windowHeight + 10,
         orientation = "horizontal",
         model = NetworkModel.up,
-        width = 105,
-        height = 50
+        width = 215,
+        height = 25
     },
     Ui.Bar {
-        x = windowWidth - 100,
-        y = windowHeight + 5,
+        -- Network down
+        x = windowWidth - 210,
+        y = windowHeight + 35,
         orientation = "horizontal",
         model = NetworkModel.down,
-        width = 105,
-        height = 50
+        width = 215,
+        height = 25
     }
 
 }

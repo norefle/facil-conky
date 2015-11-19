@@ -19,8 +19,8 @@ local CpuModel = {
 }
 local MemoryModel = { use = 0, total = 100 }
 local NetworkModel = {
-    up = { use = 0, total = 100000 },
-    down = { use = 0, total = 100000 }
+    up = { use = 0, total = 10000 },
+    down = { use = 0, total = 10000 }
 }
 
 local function boardAsString(board)
