@@ -1,6 +1,6 @@
 local Conf = require "theme.conf"
 --- @todo Replace explicit ListModel with model registration.
-return function(Ui, width, height, ListModel, CpuModel, MemoryModel)
+return function(Ui, width, height, ListModel, CpuModel, MemoryModel, NetworkModel)
     local windowWidth = width - 2 * Conf.Left
     local windowHeight = height - 2 * Conf.Top
 --------------------------------------------------------------------------------
@@ -58,7 +58,24 @@ return Ui.Window {
         model = MemoryModel,
         width = 215,
         height = 50
+    },
+    Ui.Bar {
+        x = windowWidth - 210,
+        y = windowHeight + 5,
+        orientation = "horizontal",
+        model = NetworkModel.up,
+        width = 105,
+        height = 50
+    },
+    Ui.Bar {
+        x = windowWidth - 100,
+        y = windowHeight + 5,
+        orientation = "horizontal",
+        model = NetworkModel.down,
+        width = 105,
+        height = 50
     }
+
 }
 --------------------------------------------------------------------------------
 end

@@ -18,6 +18,10 @@ local CpuModel = {
     { use = 0, total = 100 }
 }
 local MemoryModel = { use = 0, total = 100 }
+local NetworkModel = {
+    up = { use = 0, total = 100000 },
+    down = { use = 0, total = 100000 }
+}
 
 local function boardAsString(board)
     return string.format("[ %3d | %3d ] %s",
@@ -55,7 +59,7 @@ local function initialize(style, path, width, height)
         Theme.Tasks.Limit = math.modf((height / 20) / 4)
         Graphics = require("core.graphics")(Display)
         Ui = require("core.ui")(Graphics, Theme)
-        Window = require("theme.ui")(Ui, width, height, ListModel, CpuModel, MemoryModel)
+        Window = require("theme.ui")(Ui, width, height, ListModel, CpuModel, MemoryModel, NetworkModel)
     end
 end
 
@@ -87,7 +91,7 @@ local function getTodoList(states, description)
     ), 2)
 end
 
-function conky_main(style, path, width, height)
+function conky_main(style, path, width, height, netinterface)
     assert(style, "Expects not null style name")
     assert(path, "Expects not null path to facil")
 
@@ -100,6 +104,9 @@ function conky_main(style, path, width, height)
     CpuModel[3].use = tonumber(conky_parse("${cpu cpu2}"))
     CpuModel[4].use = tonumber(conky_parse("${cpu cpu3}"))
     MemoryModel.use = tonumber(conky_parse("${memperc}"))
+    NetworkModel.up.use = tonumber(conky_parse("${upspeedf " .. netinterface .. "}"))
+    NetworkModel.down.use = tonumber(conky_parse("${downspeedf " .. netinterface .. "}"))
+
 
     initialize(style, path, width, height)
 
