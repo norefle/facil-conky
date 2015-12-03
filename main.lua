@@ -11,12 +11,7 @@ local Ui = nil
 local Window = nil
 local Theme = nil
 local ListModel = {}
-local CpuModel = {
-    { use = 0, total = 100 },
-    { use = 0, total = 100 },
-    { use = 0, total = 100 },
-    { use = 0, total = 100 }
-}
+local CpuModel = { }
 local MemoryModel = { use = 0, total = 100 }
 local NetworkModel = {
     up = { use = 0, total = 10000 },
@@ -43,7 +38,7 @@ local function exceededWip(board)
     return (board.wip ~= 0) and (#board.tasks >= board.wip)
 end
 
-local function initialize(style, path, width, height)
+local function initialize(style, path, width, height, cpus)
     if not Surface then
         Surface = cairo_xlib_surface_create(
             conky_window.display,
@@ -59,6 +54,9 @@ local function initialize(style, path, width, height)
         Theme.Tasks.Limit = math.modf((height / 20) / 4)
         Graphics = require("core.graphics")(Display)
         Ui = require("core.ui")(Graphics, Theme)
+        CpuModel = M.map(M.range(1, cpus), function(_, index)
+            return { use = 0, total = 100 }
+        end)
         Window = require("theme.ui")(Ui, width, height, ListModel, CpuModel, MemoryModel, NetworkModel)
     end
 end
@@ -91,7 +89,7 @@ local function getTodoList(states, description)
     ), 2)
 end
 
-function conky_main(style, path, width, height, netinterface)
+function conky_main(style, path, width, height, netinterface, cpus)
     assert(style, "Expects not null style name")
     assert(path, "Expects not null path to facil")
 
@@ -99,16 +97,18 @@ function conky_main(style, path, width, height, netinterface)
     if not conky_window or updates < 5 then
       return
     end
-    CpuModel[1].use = tonumber(conky_parse("${cpu cpu0}"))
-    CpuModel[2].use = tonumber(conky_parse("${cpu cpu1}"))
-    CpuModel[3].use = tonumber(conky_parse("${cpu cpu2}"))
-    CpuModel[4].use = tonumber(conky_parse("${cpu cpu3}"))
+
+    initialize(style, path, width, height, cpus)
+
+    M.forEach(CpuModel, function(index, _)
+        CpuModel[index].use = tonumber(conky_parse("${cpu cpu" .. index .. "}"))
+    end)
+
     MemoryModel.use = tonumber(conky_parse("${memperc}"))
     NetworkModel.up.use = tonumber(conky_parse("${upspeedf " .. netinterface .. "}"))
     NetworkModel.down.use = tonumber(conky_parse("${downspeedf " .. netinterface .. "}"))
 
 
-    initialize(style, path, width, height)
 
     cairo_select_font_face(Display, "Droid Sans Mono Slashed", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
     cairo_set_font_size(Display, 12)
