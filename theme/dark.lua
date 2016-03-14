@@ -2,7 +2,7 @@
 -- @brief Dark theme file for conky.
 ----------------------------------------------------------------------------]]--
 
-local Util = require "core.util"
+local Util = require "flconky.core.util"
 
 return {
     Color = {

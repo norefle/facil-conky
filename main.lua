@@ -14,8 +14,8 @@ local ListModel = {}
 local CpuModel = { }
 local MemoryModel = { use = 0, total = 100 }
 local NetworkModel = {
-    up = { use = 0, total = 10000 },
-    down = { use = 0, total = 10000 }
+    up = { use = 0, total = 5000 },
+    down = { use = 0, total = 5000 }
 }
 
 local function boardAsString(board)
@@ -50,14 +50,14 @@ local function initialize(style, path, width, height, cpus)
         Display = cairo_create(Surface)
     end
     if not Window then
-        Theme = M.extend(require("theme." .. style), require("theme.conf"))
+        Theme = M.extend(require("flconky.theme." .. style), require("flconky.theme.conf"))
         Theme.Tasks.Limit = math.modf((height / 20) / 4)
-        Graphics = require("core.graphics")(Display)
-        Ui = require("core.ui")(Graphics, Theme)
+        Graphics = require("flconky.core.graphics")(Display)
+        Ui = require("flconky.core.ui")(Graphics, Theme)
         CpuModel = M.map(M.range(1, cpus), function(_, index)
             return { use = 0, total = 100 }
         end)
-        Window = require("theme.ui")(Ui, width, height, ListModel, CpuModel, MemoryModel, NetworkModel)
+        Window = require("flconky.theme.ui")(Ui, width, height, ListModel, CpuModel, MemoryModel, NetworkModel)
     end
 end
 

@@ -1,4 +1,4 @@
-local Conf = require "theme.conf"
+local Conf = require "flconky.theme.conf"
 --- @todo Replace explicit ListModel with model registration.
 return function(Ui, width, height, ListModel, CpuModel, MemoryModel, NetworkModel)
     local windowWidth = width - 2 * Conf.Left
