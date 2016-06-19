@@ -12,6 +12,7 @@ local Window = nil
 local Theme = nil
 local ListModel = {}
 local CpuModel = { }
+local TempModel = {}
 local MemoryModel = { use = 0, total = 100 }
 local NetworkModel = {
     up = { use = 0, total = 5000 },
@@ -57,7 +58,7 @@ local function initialize(style, path, width, height, cpus)
         CpuModel = M.map(M.range(1, cpus), function(_, index)
             return { use = 0, total = 100 }
         end)
-        Window = require("flconky.theme.ui")(Ui, width, height, ListModel, CpuModel, MemoryModel, NetworkModel)
+        Window = require("flconky.theme.ui")(Ui, width, height, ListModel, CpuModel, TempModel, MemoryModel, NetworkModel)
     end
 end
 
@@ -89,6 +90,26 @@ local function getTodoList(states, description)
     ), 2)
 end
 
+Sensors = {}
+
+function Sensors:temperature(core)
+    local template = [[%+(%d+).?(%d*)%s*°C%s*]]
+    local current, currente, high, highe, crit, crite = self.data:match(
+        "%s*Core%s+" ..
+        core .. "%s*:%s*" .. template .. "%s*%(" ..
+        "high%s*=%s*" .. template .. "%s*,%s*" ..
+        "crit%s*=%s*" .. template .. "%)%s*"
+    )
+    if current ~= nil then
+        return {
+            ["core"] = core,
+            ["temp"] = tonumber(tostring(current) .. "." .. tostring(currente)),
+            ["high"] = tonumber(tostring(high) .. "." .. tostring(highe)),
+            ["crit"] = tonumber(tostring(crit) .. "." .. tostring(crite))
+        }
+    end
+end
+
 function conky_main(style, path, width, height, netinterface, cpus)
     assert(style, "Expects not null style name")
     assert(path, "Expects not null path to facil")
@@ -108,11 +129,24 @@ function conky_main(style, path, width, height, netinterface, cpus)
     NetworkModel.up.use = tonumber(conky_parse("${upspeedf " .. netinterface .. "}"))
     NetworkModel.down.use = tonumber(conky_parse("${downspeedf " .. netinterface .. "}"))
 
-
-
     cairo_select_font_face(Display, "Droid Sans Mono Slashed", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
     cairo_set_font_size(Display, 12)
 
     ListModel.data = getTodoList(Facil.status(path))
+
+    --- @todo Replace with proper UI component instead of list.
+    Sensors.data = conky_parse("${exec sensors}")
+    local temperature = M.map(M.range(0, cpus), function(_, index)
+        local temp = Sensors:temperature(index)
+        if nil ~= temp then
+            local color = temp.core < temp.high and Theme.Color.Text or Theme.Color.Warning
+            return { "Core " .. temp.core .. ": " .. tostring(temp.temp), color }
+        else
+            return nil
+        end
+    end)
+    TempModel.data = M.filter(temperature, function(_, value)
+        return nil ~= value and "table" == type(value)
+    end)
     Ui.draw(Window, Theme.Left, Theme.Top)
 end

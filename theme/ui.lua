@@ -1,6 +1,6 @@
 local Conf = require "flconky.theme.conf"
 --- @todo Replace explicit ListModel with model registration.
-return function(Ui, width, height, ListModel, CpuModel, MemoryModel, NetworkModel)
+return function(Ui, width, height, ListModel, CpuModel, TempModel, MemoryModel, NetworkModel)
     local windowWidth = width - 2 * Conf.Left
     local windowHeight = height - 2 * Conf.Top
 
@@ -36,6 +36,13 @@ return function(Ui, width, height, ListModel, CpuModel, MemoryModel, NetworkMode
             model = ListModel
         },
         -- Ui.Horizontal {
+        Ui.List {
+            x = windowWidth - 210,
+            y = windowHeight - 250,
+            width = 215,
+            height = 250,
+            model = TempModel
+        },
         Ui.Bar {
             -- Memory
             x = windowWidth - 210,
