@@ -139,7 +139,7 @@ function conky_main(style, path, width, height, netinterface, cpus)
     local temperature = M.map(M.range(0, cpus), function(_, index)
         local temp = Sensors:temperature(index)
         if nil ~= temp then
-            local color = temp.core < temp.high and Theme.Color.Text or Theme.Color.Warning
+            local color = temp.temp < temp.high and Theme.Color.Text or Theme.Color.Warning
             return { "Core " .. temp.core .. ": " .. tostring(temp.temp), color }
         else
             return nil

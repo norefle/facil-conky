@@ -38,7 +38,7 @@ return function(Ui, width, height, ListModel, CpuModel, TempModel, MemoryModel, 
         -- Ui.Horizontal {
         Ui.List {
             x = windowWidth - 210,
-            y = windowHeight - 250,
+            y = windowHeight - 270 - ((TempModel.data and #TempModel.data or 0) * 20),
             width = 215,
             height = 250,
             model = TempModel
