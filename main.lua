@@ -51,9 +51,9 @@ local function initialize(style, path, width, height, cpus)
         Display = cairo_create(Surface)
     end
     if not Window then
-        Theme = M.extend(require("flconky.theme." .. style), require("flconky.theme.conf"))
-        Theme.Tasks.Limit = math.modf((height / 20) / 4)
         Graphics = require("flconky.core.graphics")(Display)
+        Theme = M.extend(require("flconky.theme." .. style)(Graphics), require("flconky.theme.conf"))
+        Theme.Tasks.Limit = math.modf((height / 20) / 4)
         Ui = require("flconky.core.ui")(Graphics, Theme)
         CpuModel = M.map(M.range(1, cpus), function(_, index)
             return { use = 0, total = 100 }
@@ -148,5 +148,5 @@ function conky_main(style, path, width, height, netinterface, cpus)
     TempModel.data = M.filter(temperature, function(_, value)
         return nil ~= value and "table" == type(value)
     end)
-    Ui.draw(Window, Theme.Left, Theme.Top)
+    Ui.draw(Window)
 end

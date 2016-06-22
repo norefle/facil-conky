@@ -20,6 +20,10 @@ function _M:rectangle(foreground, background, x, y, width, height)
     cairo_fill(self.context)
 end
 
+function _M:color(r, g, b, a)
+    return { r / 256, g / 256, b / 256, a and (a / 255) or 1.0 }
+end
+
 return function(cairoContext)
     local obj = { context = cairoContext }
     return setmetatable(obj, { __index = _M })

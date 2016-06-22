@@ -7,8 +7,9 @@ local M = require "moses"
 -- External dependency
 local Theme = nil
 local Graphics = nil
-
 --
+
+local Debug = false
 
 local function hasMethod(obj, method)
     return "table" == type(obj) and "function" == type(obj[method])
@@ -38,6 +39,23 @@ local function draw(element)
     end
 
     M.forEach(element.children, function(_, child) draw(child) end)
+
+    if Debug then
+        Graphics:rectangle(
+            Theme.Color.Border,
+            Theme.Color.Transparent,
+            element.x,
+            element.y,
+            element.width,
+            element.height
+        )
+        Graphics:print(
+            element.name,
+            element.x + Theme.Margin,
+            element.y + Theme.Margin,
+            Theme.Color.Warning
+        )
+    end
 end
 
 -- Core functionality
@@ -92,11 +110,12 @@ local function Bar(prototype)
     return obj
 end
 
-return function(graphics, theme)
+return function(graphics, theme, debug)
     assert(graphics, "UI expects valid graphics interface.")
     assert(theme, "UI expects valid theme configuration.")
 
     Graphics, Theme = graphics, theme
+    Debug = debug or false
 
     return {
         Window = Window,
